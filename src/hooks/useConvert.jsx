@@ -8,7 +8,6 @@ const useConvert = () => {
   const fileReader = new FileReader();
 
   const handleUploadFileChange = (event) => {
-    console.log(event.target.files[0]);
     setFile(event.target.files[0]);
     setIsConvertToJson(false);
   };
@@ -51,7 +50,6 @@ const useConvert = () => {
     const csvContent = jsonData
       .map((data) => {
         const valueString = headers.map((key) => data[key]).join(',') + '\n';
-        console.log(valueString);
         return valueString;
       })
       .join('');
@@ -65,7 +63,6 @@ const useConvert = () => {
   };
 
   const handleJsonToCsv = () => {
-    console.log('hi');
     convertJsonToCsvFile();
   };
 

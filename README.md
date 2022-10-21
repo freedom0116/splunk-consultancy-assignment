@@ -8,6 +8,7 @@
 This website is built for simple csv/json converting. After staring this project, u can test and play by youself.
 
 ## Future Work
+- Replace by Vite(definitely).
 - Use Typescript.
 - More file type support.
 - Json data editor.
