@@ -1,5 +1,4 @@
 import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 const useConvert = () => {
   const [file, setFile] = React.useState(undefined);
@@ -14,9 +13,7 @@ const useConvert = () => {
     setIsConvertToJson(false);
   };
 
-  const csvFileToJson = (text) => {
-    // const csvHeader = text.slice(0, text.indexOf("\n")).split(",");
-
+  const convertCsvFileToJson = React.useCallback((text) => {
     const csvHeader = text.slice(0, text.indexOf('\n')).replace('\r', '').split(',');
     let csvData = text
       .slice(text.indexOf('\n') + 1)
@@ -26,23 +23,21 @@ const useConvert = () => {
     csvData.splice(-1);
 
     const convertData = csvData.map((data) => {
-      let newObject = { key: uuidv4() };
+      let newObject = {};
       csvHeader.forEach((header, index) => {
         newObject = { ...newObject, [header]: data[index] };
       });
       return newObject;
     });
 
-    console.log(convertData);
-
     setJsonData(convertData);
-  };
+  }, []);
 
   const handleCsvToJson = () => {
     if (file) {
       fileReader.onload = function (event) {
         const text = event.target.result;
-        csvFileToJson(text);
+        convertCsvFileToJson(text);
       };
 
       fileReader.readAsText(file);
@@ -50,8 +45,28 @@ const useConvert = () => {
     }
   };
 
+  const convertJsonToCsvFile = () => {
+    const headers = Object.keys(jsonData[0]);
+
+    const csvContent = jsonData
+      .map((data) => {
+        const valueString = headers.map((key) => data[key]).join(',') + '\n';
+        console.log(valueString);
+        return valueString;
+      })
+      .join('');
+
+    let fileName = 'json2Csv' + new Date().getTime() + '.csv';
+
+    let link = document.createElement('a');
+    link.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvContent));
+    link.setAttribute('download', fileName);
+    link.click();
+  };
+
   const handleJsonToCsv = () => {
     console.log('hi');
+    convertJsonToCsvFile();
   };
 
   return { file, isConvertToJson, jsonData, handleUploadFileChange, handleCsvToJson, handleJsonToCsv };

@@ -7,12 +7,20 @@ const Convert = () => {
 
   return (
     <Box display="flex" flexDirection="row" alignItems="center">
-      <Box display="flex" flexDirection="column" border="solid 4px white" borderRadius="12px" height="400px" width="300px" padding="8px">
+      <Box
+        display="flex"
+        flexDirection="column"
+        border="solid 4px white"
+        borderRadius="12px"
+        height="400px"
+        width="300px"
+        padding="8px"
+      >
         <Typography variant="h4" sx={{ margin: '8px' }}>
           CSV
         </Typography>
-        <Box display="flex" flex="1" flexDirection="column" alignItems="center" justifyContent='center'>
-          <Button variant="contained" component="label" sx={{mb: '10px'}}>
+        <Box display="flex" flex="1" flexDirection="column" alignItems="center" justifyContent="center">
+          <Button variant="contained" component="label" sx={{ mb: '10px' }}>
             Upload CSV File
             <input hidden accept=".csv" type="file" onChange={handleUploadFileChange} />
           </Button>
