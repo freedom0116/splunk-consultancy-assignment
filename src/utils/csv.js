@@ -34,7 +34,6 @@ export const parseJson = (text) => {
   const csvData = obj
     .map((data) => {
       const valueString = [...headers].map((key) => data[key] || '').join(',') + '\n';
-      console.log(valueString, [...headers]);
       return valueString;
     })
     .join('');
