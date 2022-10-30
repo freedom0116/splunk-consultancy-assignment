@@ -1,72 +1,70 @@
 import React from 'react';
+import { parseCSV, stringifyCSV, parseJson } from '../utils/csv';
 
 const useConvert = () => {
   const [file, setFile] = React.useState(undefined);
-  const [isConvertToJson, setIsConvertToJson] = React.useState(false);
-  const [jsonData, setJsonData] = React.useState([]);
+  const [csvText, setCsvText] = React.useState('');
+  const [jsonText, setJsonText] = React.useState('');
 
   const fileReader = new FileReader();
 
   const handleUploadFileChange = (event) => {
     setFile(event.target.files[0]);
-    setIsConvertToJson(false);
+    fileReader.onload = function (event) {
+      const text = event.target.result;
+      setCsvText(text);
+    };
+
+    fileReader.readAsText(event.target.files[0]);
   };
 
-  const convertCsvFileToJson = React.useCallback((text) => {
-    const csvHeader = text.slice(0, text.indexOf('\n')).replace('\r', '').split(',');
-    let csvData = text
-      .slice(text.indexOf('\n') + 1)
-      .split('\n')
-      .map((s) => s.replace('\r', '').split(','));
-
-    csvData.splice(-1);
-
-    const convertData = csvData.map((data) => {
-      let newObject = {};
-      csvHeader.forEach((header, index) => {
-        newObject = { ...newObject, [header]: data[index] };
-      });
-      return newObject;
-    });
-
-    setJsonData(convertData);
+  const convertCsvFileToJson = React.useCallback((csvText) => {
+    const { csvHeader, csvData } = parseCSV(csvText);
+    const json = stringifyCSV({ csvHeader, csvData });
+    setJsonText(json);
   }, []);
 
   const handleCsvToJson = () => {
-    if (file) {
-      fileReader.onload = function (event) {
-        const text = event.target.result;
-        convertCsvFileToJson(text);
-      };
-
-      fileReader.readAsText(file);
-      setIsConvertToJson(true);
-    }
+    convertCsvFileToJson(csvText);
   };
 
   const convertJsonToCsvFile = () => {
-    const headers = Object.keys(jsonData[0]);
-
-    const csvContent = jsonData
-      .map((data) => {
-        const valueString = headers.map((key) => data[key]).join(',') + '\n';
-        return valueString;
-      })
-      .join('');
-
-    let fileName = 'json2Csv' + new Date().getTime() + '.csv';
-
-    let link = document.createElement('a');
-    link.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvContent));
-    link.setAttribute('download', fileName);
-    link.click();
+    const text = parseJson(jsonText);
+    setCsvText(text);
   };
 
   const handleJsonToCsv = () => {
     convertJsonToCsvFile();
   };
 
-  return { file, isConvertToJson, jsonData, handleUploadFileChange, handleCsvToJson, handleJsonToCsv };
+  const handleCsvChange = (event) => {
+    setCsvText(event.target.value);
+  };
+
+  const handleJsonChange = (event) => {
+    setJsonText(event.target.value);
+  };
+
+  const handleDownload = () => {
+    const fileName = 'json2Csv' + new Date().getTime() + '.csv';
+
+    let link = document.createElement('a');
+    link.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvText));
+    link.setAttribute('download', fileName);
+    link.click();
+  };
+
+  return {
+    file,
+    csvText,
+    jsonText,
+    handleUploadFileChange,
+    handleCsvToJson,
+    handleJsonToCsv,
+    handleCsvChange,
+    handleJsonChange,
+    handleDownload,
+  };
 };
 
 export default useConvert;
