@@ -13,6 +13,7 @@ const Convert = () => {
     handleCsvChange,
     handleJsonChange,
     handleDownload,
+    handleGeolookup,
   } = useConvert();
 
   return (
@@ -81,6 +82,9 @@ const Convert = () => {
         </Button>
         <Button variant="contained" component="label" sx={{ mb: '10px' }} onClick={handleDownload}>
           Download CSV File
+        </Button>
+        <Button variant="contained" component="label" sx={{ mb: '10px' }} onClick={handleGeolookup}>
+          Add Geolookup
         </Button>
       </Box>
     </Box>

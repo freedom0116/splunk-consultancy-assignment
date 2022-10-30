@@ -1,5 +1,5 @@
 import React from 'react';
-import { parseCSV, stringifyCSV, parseJson } from '../utils/csv';
+import { parseCSV, stringifyCSV, parseJson, generateFileName, fetchGeoData, insertGeoData } from '../utils/csv';
 
 const useConvert = () => {
   const [file, setFile] = React.useState(undefined);
@@ -46,12 +46,19 @@ const useConvert = () => {
   };
 
   const handleDownload = () => {
-    const fileName = 'json2Csv' + new Date().getTime() + '.csv';
+    const fileName = generateFileName();
 
     let link = document.createElement('a');
     link.setAttribute('href', 'data:text/csv;charset=utf-8,%EF%BB%BF' + encodeURI(csvText));
     link.setAttribute('download', fileName);
     link.click();
+  };
+
+  const handleGeolookup = async () => {
+    const data = await fetchGeoData();
+    const { lat, lon } = data.features[0].properties;
+    const update = insertGeoData(jsonText, lat, lon);
+    setJsonText(update);
   };
 
   return {
@@ -64,6 +71,7 @@ const useConvert = () => {
     handleCsvChange,
     handleJsonChange,
     handleDownload,
+    handleGeolookup,
   };
 };
 

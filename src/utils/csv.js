@@ -40,3 +40,21 @@ export const parseJson = (text) => {
     .join('');
   return [...headers] + '\n' + csvData;
 };
+
+export const generateFileName = () => 'json2Csv' + new Date().getTime() + '.csv';
+
+export const fetchGeoData = async () => {
+  return await fetch(
+    'https://api.geoapify.com/v1/geocode/search?text=38%20Upper%20Montagu%20Street%2C%20Westminster%20W1H%201LJ%2C%20United%20Kingdom&apiKey=aa6c564ccc2b471fbefdd671860bd584'
+  )
+    .then((response) => response.json())
+    .catch((err) => {
+      console.err(err);
+    });
+};
+
+export const insertGeoData = (jsonText, lat, lon) => {
+  const data = JSON.parse(jsonText);
+  const updated = data.map((obj) => ({ ...obj, lat, lon }));
+  return JSON.stringify(updated);
+};
